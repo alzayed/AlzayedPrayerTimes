@@ -34,35 +34,45 @@ class PrayerTimes {
             "name": "Muslim World League",
             "params": [
                 "fajr": 18.0,
-                "isha": 17.0
+                "isha": 17.0,
+                "maghrib": "0 min",
+                "midnight": "Standard"
             ]
         ],
         "ISNA": [
             "name": "Islamic Society of North America (ISNA)",
             "params": [
                 "fajr": 15.0,
-                "isha": 15.0
+                "isha": 15.0,
+                "maghrib": "0 min",
+                "midnight": "Standard"
             ]
         ],
         "Egypt": [
             "name": "Egyptian General Authority of Survey",
             "params": [
                 "fajr": 19.5,
-                "isha": 17.5
+                "isha": 17.5,
+                "maghrib": "0 min",
+                "midnight": "Standard"
             ]
         ],
         "Makkah": [
             "name": "Umm Al-Qura University, Makkah",
             "params": [
                 "fajr": 18.5,
-                "isha": "90 min"
+                "isha": "90 min",
+                "maghrib": "0 min",
+                "midnight": "Standard"
             ]
         ],
         "Karachi": [
             "name": "University of Islamic Sciences, Karachi",
             "params": [
                 "fajr": 18.0,
-                "isha": 18.0
+                "isha": 18.0,
+                "maghrib": "0 min",
+                "midnight": "Standard"
             ]
         ],
         "Tehran": [
@@ -85,49 +95,57 @@ class PrayerTimes {
         ]
     ]
     
-    // Default parameters in calculation methods
-    let defaultParams = [
-        "maghrib": "0 min", "midnight": "Standard"
-    ]
-    
     // ----------------- Defaut setting -----------------
     var calcMethod = "MWL"
     
-    var setting = [
+    var setting: Dictionary<String, Any> = [
         "imsak": "10 min",
         "dhuhr": "0 min",
         "asr": "Standard",
         "highLats": "NightMiddle"
     ]
-    var timeFormat = "24h"
+    
+    // ----------------- Local Variables -----------------
+    var timeFormat: String = "24h"
     var timeSuffixes = ["am", "pm"]
     let invalidTime = "-----"
     
-    // --------------- Local variables
-    var dst: Double
-    var jDate: Double
-    let coords: Coords
+    var dst = TimeZone.current.isDaylightSavingTime() ? 1 : 0
+    var jDate = 0.0
+    var coords = Coords(lat: 29.3, lng: 48)
+    var timeZone: Double = 0.0
+    
+    let alzayedMath: AlzayedMath
+    
     
     // ------------------------------------------------
     // init
     // ------------------------------------------------
     init() {
-        dst = TimeZone.current.isDaylightSavingTime() ? 1 : 0
-        jDate = 0
-        coords = Coords(lat: 29.3, lng: 48)
+        alzayedMath = AlzayedMath()
+        let selectedMothod = methods[calcMethod]!
+        let params = selectedMothod["params"]! as! Dictionary<String, Any>
+        
+        for (k, v) in params {
+            setting[k] = v
+        }
+        
     }
+    
+    
     
     // ------------------------------------------------
     // getTimes
     // ------------------------------------------------
-    func getTimes(date: Date, coords: Coords, timezone: Int = 0, format: String = "24h") -> String {
-        
-        
+    func getTimes(date: Date, coords: Coords, timezone: Int = 0, format: String = "24h") -> Dictionary<String, Any> {
         
         // Save the coords to the local variable
         self.coords.lat = coords.lat
         self.coords.lng = coords.lng
         self.coords.elv = coords.elv
+        
+        timeFormat = format
+        timeZone = gmtOffset(date: Date())
         
         // Extract the Year, Month and the day from the date
         let formatter = DateFormatter()
@@ -138,41 +156,241 @@ class PrayerTimes {
         formatter.dateFormat = "d"
         let day = Double(formatter.string(from: date))
         
-        let jDate = julian(year: year!, month: month!, day: day!) - coords.lng / (15 * 24)
+        jDate = julian(year: year!, month: month!, day: day!) - coords.lng / (15 * 24)
         
-        computeTimes()
-        
-        
-        
-        return "\(jDate)"
+        return computeTimes()
     }
     
     // ------------------------------------------------
-    // computeTimes()
+    // computeTimes
     // ------------------------------------------------
-    func computeTimes() -> String {
-        var times: Dictionary<String, Double> = [
-            "imsak" : 5, "fajr" : 5, "sunrise" : 6, "dhuhr" : 12, "asr" : 13, "sunset" : 18, "isha" : 18, "maghrib": 18
-        ]
+    func computeTimes() -> Dictionary<String, Any> {
+        var times: Dictionary<String, Double> = ["imsak" : 5, "fajr" : 5, "sunrise" : 6, "dhuhr" : 12, "asr" : 13, "sunset" : 18, "isha" : 18, "maghrib": 18]
         
         times = computePrayerTimes(times: times)
+        times = adjustTimes(times: times)
         
-        return "\(times)"
+        times["midnight"] = setting["midnight"] as! String == "jafari" ?
+            times["sunset"]! + timeDiff(time1: times["sunset"]!, time2: times["fajr"]!) / 2 :
+            times["sunset"]! + timeDiff(time1: times["sunset"]!, time2: times["sunrise"]!) / 2
+        
+        times["nightlong"] = timeDiff(time1: times["sunset"]!, time2: times["fajr"]!)
+        
+        times["onethirdnight"] = times["nightlong"]! / 3
+        
+        times["lastthird"] = times["fajr"]! - times["onethirdnight"]!
+        
+        let editedTimes = modifyFormat(times: times)
+        
+        return editedTimes
+    }
+    
+    
+    
+    // ------------------------------------------------
+    // modifyFormat
+    // ------------------------------------------------
+    func modifyFormat(times: Dictionary<String, Double>) -> Dictionary<String, Any> {
+        var editedTimes: Dictionary<String, Any> = times
+        for (k, _) in times {
+            editedTimes[k] = getFormattedTime(time: times[k]!, format: timeFormat)
+        }
+        return editedTimes
+    }
+    
+    
+    // ------------------------------------------------
+    // getFormattedTime
+    // ------------------------------------------------
+    func getFormattedTime(time: Double, format: String, suffixes: String = "") -> String {
+        
+        if time.isNaN {
+            return invalidTime
+        }
+        if format == "Float" {
+            return "\(time)"
+        }
+        
+        let editedTime = alzayedMath.fixHour(a: time + 0.5 / 60)
+        
+        let hours = floor(editedTime)
+        let minutes = floor((editedTime - hours) * 60)
+        let suffix = format == "12h" ? timeSuffixes[hours < 12 ? 0 : 1] : ""
+        let hour = format == "24h" ? twoDigitFormat(num: hours) : "\((hours + 11).truncatingRemainder(dividingBy: 13))"
+        return hour + ":" + twoDigitFormat(num: minutes) + suffix
+        
+    }
+    
+    
+    // ------------------------------------------------
+    // twoDigitFormat
+    // ------------------------------------------------
+    func twoDigitFormat(num: Double) -> String {
+        let intNum = Int(num)
+        return intNum < 10 ? "0\(intNum)" : "\(intNum)"
+    }
+    
+    
+    // ------------------------------------------------
+    // adjustTime
+    // ------------------------------------------------
+    func adjustTimes(times: Dictionary<String, Double>) -> Dictionary<String, Double> {
+        let params = setting
+        var editedTimes = times
+        for (k, _) in editedTimes {
+            editedTimes[k]! += timeZone - coords.lng / 15
+        }
+        if params["highLats"]! as! String != "None" {
+            editedTimes = adjustHighLats(times: editedTimes)
+        }
+        
+        if isMin(arg: params["imsak"] as! String) {
+            editedTimes["imsak"] = editedTimes["fajr"]! - eval(str: params["imsak"] as! String) / 60
+        }
+        
+        if isMin(arg: params["maghrib"] as! String) {
+            editedTimes["maghrib"] = editedTimes["sunset"]! + eval(str: params["maghrib"] as! String) / 60
+        }
+        
+        if isMin(arg: String(describing: params["isha"])) {
+            editedTimes["isha"] = editedTimes["maghrib"]! + eval(str: params["isha"] as! String) / 60
+        }
+        
+        editedTimes["dhuhr"]! += (eval(str: params["dhuhr"] as! String) / 60)
+        
+        return editedTimes
+    }
+    
+    
+    // ------------------------------------------------
+    // isMin
+    // ------------------------------------------------
+    func isMin(arg: String) -> Bool {
+        return arg.contains("min")
+    }
+    
+    
+    // ------------------------------------------------
+    // adjustHighLats
+    // ------------------------------------------------
+    func adjustHighLats(times: Dictionary<String, Double>) -> Dictionary<String, Double> {
+        var editedTimes = times
+        let params: Dictionary<String, Any> = setting
+
+        let nightTime = timeDiff(time1: times["sunset"]!, time2: times["sunrise"]!)
+        
+        editedTimes["imsak"] = adjustHLTime(time: times["imsak"]!, base: times["sunrise"]!, angle: eval(str: params["imsak"] as! String), night: nightTime, direction: "ccw")
+        editedTimes["fajr"] = adjustHLTime(time: times["fajr"]!, base: times["sunrise"]!, angle: params["fajr"] as! Double, night: nightTime, direction: "ccw")
+        editedTimes["isha"] = adjustHLTime(time: times["isha"]!, base: times["sunset"]!, angle: params["isha"] as! Double, night: nightTime)
+        editedTimes["maghrib"] = adjustHLTime(time: times["maghrib"]!, base: times["sunset"]!, angle: eval(str: params["maghrib"] as! String), night: nightTime)
+        
+        return editedTimes
+    }
+    
+    
+    
+    
+    // ------------------------------------------------
+    // adjustHLTime
+    // ------------------------------------------------
+    func adjustHLTime(time: Double, base: Double, angle: Double, night: Double, direction: String = "") -> Double {
+        var editedTime = time
+        let portion = nightPortion(angle: angle, night: night)
+        let timeDiff = direction == "ccw" ? self.timeDiff(time1: time, time2: base) : self.timeDiff(time1: base, time2: time)
+        if time.isNaN || timeDiff > portion {
+            editedTime = base + (direction == "ccw" ?  -portion : portion)
+        }
+        return editedTime
     }
     
     // ------------------------------------------------
-    // computePrayerTimes()
+    // nightPortion
+    // ------------------------------------------------
+    func nightPortion(angle: Double, night: Double) -> Double {
+        let method: String = setting["highLats"] as! String
+        var portion: Double = 1 / 2 // Midnight
+        if method == "AngleBased" {
+            portion = 1 / 60 * angle
+        }
+        if method == "OneSeventh" {
+            portion = 1 / 7
+        }
+        return portion * night
+    }
+    
+    
+    
+    // ------------------------------------------------
+    // timeDiff
+    // ------------------------------------------------
+    func timeDiff(time1: Double, time2: Double) -> Double {
+        return alzayedMath.fixHour(a: time2 - time1)
+    }
+    
+    
+    
+    // ------------------------------------------------
+    // eval
+    // ------------------------------------------------
+    func eval(str: String) -> Double {
+        let num = str.split(separator: " ")[0]
+        return Double(num)!
+    }
+    
+    
+    // ------------------------------------------------
+    // computePrayerTimes
     // ------------------------------------------------
     func computePrayerTimes(times: Dictionary<String, Double>) -> Dictionary<String, Double> {
         let times = dayPortion(times: times)
+        var params = setting
         
+        let imsak = sunAngleTime(angle: eval(str: params["imsak"] as! String), time: times["imsak"]!, direction: "ccw")
+        let fajr = sunAngleTime(angle: params["fajr"] as! Double, time: times["fajr"]!, direction: "ccw")
+        let sunrise = sunAngleTime(angle: riseSetAngle(), time: times["sunrise"]!, direction: "ccw")
+        let dhuhr = midDay(time: times["dhuhr"]!)
+        let asr = asrTime(factor: asrFactor(asrParam: params["asr"] as! String), time: times["asr"]!)
+        let sunset = sunAngleTime(angle: riseSetAngle(), time: times["sunset"]!)
+        let maghrib = sunAngleTime(angle: eval(str: params["maghrib"] as! String), time: times["maghrib"]!)
+        let isha = sunAngleTime(angle: params["isha"] as! Double, time: times["isha"]!)
         
-        
-        return times
+        return ["imsak": imsak,"fajr": fajr,"sunrise": sunrise,"dhuhr": dhuhr,"asr": asr,"sunset": sunset,"maghrib": maghrib,"isha": isha]
     }
     
+    
+    
     // ------------------------------------------------
-    // dayPortion()
+    // asrTime
+    // ------------------------------------------------
+    func asrTime(factor: Double, time: Double) -> Double {
+        let decl = sunPosition(jd: jDate + time)["declination"]
+        let angel = -alzayedMath.Darccot(x: factor + alzayedMath.Dtan(d: abs(coords.lat - decl!)))
+        return sunAngleTime(angle: angel, time: time)
+    }
+    
+    
+    
+    // ------------------------------------------------
+    // asrFactor
+    // ------------------------------------------------
+    func asrFactor(asrParam: String) -> Double {
+        let factor = ["Standard": 1, "Hanafi": 2 ][asrParam]! * 1.0
+        return factor
+    }
+    
+    
+    // ------------------------------------------------
+    // riseSetAngle
+    // ------------------------------------------------
+    func riseSetAngle() -> Double {
+        return 0.0347 * sqrt(coords.elv) + 0.833
+    }
+    
+    
+    
+    
+    // ------------------------------------------------
+    // dayPortion
     // ------------------------------------------------
     func dayPortion(times: Dictionary<String, Double>) -> Dictionary<String, Double> {
         var times = times
@@ -210,9 +428,9 @@ class PrayerTimes {
     // ------------------------------------------------
     // get GMT offset
     // ------------------------------------------------
-    func gmtOffset(date: Date) -> Int {
+    func gmtOffset(date: Date) -> Double {
         let seconds = TimeZone.current.secondsFromGMT()
-        return seconds / 60 / 60
+        return Double(seconds / 60 / 60)
     }
     
     // convert utc to local time
@@ -221,22 +439,109 @@ class PrayerTimes {
         return dateUTC.addingTimeInterval(TimeInterval(seconds))
     }
     
+    // ------------------------------------------------
+    // midDay
+    // ------------------------------------------------
+    func midDay(time: Double) -> Double {
+        let eqt = sunPosition(jd: jDate + time)["equation"]
+        let noon = alzayedMath.fixHour(a: 12 - eqt!)
+        return noon
+    }
+    
+    
+    // ------------------------------------------------
+    // sunAngleTime
+    // ------------------------------------------------
+    func sunAngleTime(angle: Double, time: Double, direction: String = "") -> Double {
+        let decl = sunPosition(jd: jDate + time)["declination"]
+        let noon = midDay(time: time)
+        
+        let t = 1 / 15 * alzayedMath.Darccos(d: (-alzayedMath.Dsin(d: angle) - alzayedMath.Dsin(d: decl!) * alzayedMath.Dsin(d: coords.lat)) / (alzayedMath.Dcos(d: decl!) * alzayedMath.Dcos(d: coords.lat)))
+        
+        return noon + (direction == "ccw" ? -t : t)
+    }
+    
+    
+    
+    
+    
+    // ------------------------------------------------
+    // sunPosition
+    // ------------------------------------------------
+    func sunPosition(jd: Double) -> Dictionary<String, Double> {
+        
+        let D = jd - 2451545.0
+        let g = alzayedMath.fixAngle(a: 357.529 + 0.98560028 * D)
+        let q = alzayedMath.fixAngle(a: 280.459 + 0.98564736 * D)
+        let L = alzayedMath.fixAngle(a: q + 1.915 * alzayedMath.Dsin(d: g) + 0.020 * alzayedMath.Dsin(d: 2 * g))
+        
+        //let R = 1.00014 - 0.01671 * alzayedMath.Dcos(d: g) - 0.00014 * alzayedMath.Dcos(d: 2 * g)
+        let e = 23.439 - 0.00000036 * D
+        
+        let RA = alzayedMath.Darctan2(y: alzayedMath.Dcos(d: e) * alzayedMath.Dsin(d: L),x: alzayedMath.Dcos(d: L)) / 15
+        let eqt = q / 15 - alzayedMath.fixHour(a: RA)
+        let decl = alzayedMath.Darcsin(d: alzayedMath.Dsin(d: e) * alzayedMath.Dsin(d: L))
+        
+        return ["declination": decl, "equation": eqt]
+        
+    }
+    
+    
 }
 
 
 
 
+
+// ------------------------------------------------
+// ------------------------------------------------
+// DMath class
+// ------------------------------------------------
+// ------------------------------------------------
+class AlzayedMath {
+    func dtr(d: Double) -> Double {return d * Double.pi / 180}
+    func rtd(r: Double) -> Double {return r * 180 / Double.pi}
+    
+    func Dsin(d: Double) -> Double {return sin(dtr(d: d))}
+    func Dcos(d: Double) -> Double {return cos(dtr(d: d))}
+    func Dtan(d: Double) -> Double {return tan(dtr(d: d))}
+    
+    func Darcsin(d: Double) -> Double {return rtd(r: asin(d))}
+    func Darccos(d: Double) -> Double {return rtd(r: acos(d))}
+    func Darctan(d: Double) -> Double {return rtd(r: atan(d))}
+    
+    func Darccot(x: Double) -> Double {return rtd(r: atan(1/x))}
+    func Darctan2(y: Double, x: Double) -> Double {return rtd(r: atan2(y, x))}
+    
+    func fixAngle(a: Double) -> Double {return fix(a: a, b: 360)}
+    func fixHour(a: Double) -> Double {return fix(a: a, b: 24)}
+    
+    func fix(a: Double, b: Double) -> Double {
+        var editedA = a
+        let floorR = floor(a / b)
+        editedA = a - b * floorR
+        return editedA < 0 ? editedA + b : editedA
+    }
+    
+}
+
+
+// ------------------------------------------------
 // ------------------------------------------------
 // Coords class
 // ------------------------------------------------
+// ------------------------------------------------
 class Coords {
+    
     var lat: Double, lng: Double, elv: Double
     
     init(lat: Double, lng: Double, elv: Double = 0) {
+        
         self.lat = lat
         self.lng = lng
         self.elv = elv
     }
+    
 }
 
 
