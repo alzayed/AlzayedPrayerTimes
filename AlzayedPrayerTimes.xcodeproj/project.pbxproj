@@ -7,15 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C1D18E9214EE74A00EA018B /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1D18E8214EE74A00EA018B /* Coordinates.swift */; };
+		4C1D18EB214EE8C000EA018B /* AlzayedMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1D18EA214EE8C000EA018B /* AlzayedMath.swift */; };
+		4C1D18ED214EEADF00EA018B /* UserScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1D18EC214EEADF00EA018B /* UserScreen.swift */; };
 		4C63491221405A4B00724D5B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63491121405A4B00724D5B /* AppDelegate.swift */; };
 		4C63491421405A4B00724D5B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63491321405A4B00724D5B /* ViewController.swift */; };
 		4C63491721405A4B00724D5B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C63491521405A4B00724D5B /* Main.storyboard */; };
 		4C63491921405A4C00724D5B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C63491821405A4C00724D5B /* Assets.xcassets */; };
 		4C63491C21405A4C00724D5B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C63491A21405A4C00724D5B /* LaunchScreen.storyboard */; };
+		4C81F0BE215ABFED00BC6900 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C81F0BD215ABFED00BC6900 /* Protocols.swift */; };
+		4C9B8DB4215965A300FBF3AD /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9B8DB3215965A300FBF3AD /* SettingViewController.swift */; };
 		4C9BF9EB2140675300D48537 /* PrayerTimes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9BF9EA2140675300D48537 /* PrayerTimes.swift */; };
+		4CB209F721502AEB006B828D /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB209F621502AEB006B828D /* UserSettings.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4C1D18E8214EE74A00EA018B /* Coordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinates.swift; sourceTree = "<group>"; };
+		4C1D18EA214EE8C000EA018B /* AlzayedMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlzayedMath.swift; sourceTree = "<group>"; };
+		4C1D18EC214EEADF00EA018B /* UserScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserScreen.swift; sourceTree = "<group>"; };
 		4C63490E21405A4B00724D5B /* AlzayedPrayerTimes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlzayedPrayerTimes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C63491121405A4B00724D5B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4C63491321405A4B00724D5B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -23,7 +32,10 @@
 		4C63491821405A4C00724D5B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C63491B21405A4C00724D5B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C63491D21405A4C00724D5B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4C81F0BD215ABFED00BC6900 /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		4C9B8DB3215965A300FBF3AD /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		4C9BF9EA2140675300D48537 /* PrayerTimes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimes.swift; sourceTree = "<group>"; };
+		4CB209F621502AEB006B828D /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,23 +68,61 @@
 		4C63491021405A4B00724D5B /* AlzayedPrayerTimes */ = {
 			isa = PBXGroup;
 			children = (
-				4C9BF9E92140671E00D48537 /* Scripts */,
-				4C63491121405A4B00724D5B /* AppDelegate.swift */,
-				4C63491321405A4B00724D5B /* ViewController.swift */,
-				4C63491521405A4B00724D5B /* Main.storyboard */,
-				4C63491821405A4C00724D5B /* Assets.xcassets */,
-				4C63491A21405A4C00724D5B /* LaunchScreen.storyboard */,
+				4C81F0BC215ABFCF00BC6900 /* Protocols */,
 				4C63491D21405A4C00724D5B /* Info.plist */,
+				4CEC3F42214D8DA80079EDB6 /* Controller */,
+				4CEC3F41214D8D790079EDB6 /* View */,
+				4CEC3F40214D8D510079EDB6 /* Model */,
+				4C9BF9E92140671E00D48537 /* Supporting Files */,
 			);
 			path = AlzayedPrayerTimes;
 			sourceTree = "<group>";
 		};
-		4C9BF9E92140671E00D48537 /* Scripts */ = {
+		4C81F0BC215ABFCF00BC6900 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				4C81F0BD215ABFED00BC6900 /* Protocols.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		4C9BF9E92140671E00D48537 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4CEC3F40214D8D510079EDB6 /* Model */ = {
 			isa = PBXGroup;
 			children = (
 				4C9BF9EA2140675300D48537 /* PrayerTimes.swift */,
+				4C1D18E8214EE74A00EA018B /* Coordinates.swift */,
+				4C1D18EA214EE8C000EA018B /* AlzayedMath.swift */,
+				4C1D18EC214EEADF00EA018B /* UserScreen.swift */,
+				4CB209F621502AEB006B828D /* UserSettings.swift */,
 			);
-			path = Scripts;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		4CEC3F41214D8D790079EDB6 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				4C63491521405A4B00724D5B /* Main.storyboard */,
+				4C63491821405A4C00724D5B /* Assets.xcassets */,
+				4C63491A21405A4C00724D5B /* LaunchScreen.storyboard */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		4CEC3F42214D8DA80079EDB6 /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				4C63491121405A4B00724D5B /* AppDelegate.swift */,
+				4C63491321405A4B00724D5B /* ViewController.swift */,
+				4C9B8DB3215965A300FBF3AD /* SettingViewController.swift */,
+			);
+			path = Controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -107,6 +157,7 @@
 				TargetAttributes = {
 					4C63490D21405A4B00724D5B = {
 						CreatedOnToolsVersion = 9.4.1;
+						LastSwiftMigration = 1000;
 					};
 				};
 			};
@@ -149,6 +200,12 @@
 				4C63491421405A4B00724D5B /* ViewController.swift in Sources */,
 				4C9BF9EB2140675300D48537 /* PrayerTimes.swift in Sources */,
 				4C63491221405A4B00724D5B /* AppDelegate.swift in Sources */,
+				4C81F0BE215ABFED00BC6900 /* Protocols.swift in Sources */,
+				4C9B8DB4215965A300FBF3AD /* SettingViewController.swift in Sources */,
+				4C1D18E9214EE74A00EA018B /* Coordinates.swift in Sources */,
+				4CB209F721502AEB006B828D /* UserSettings.swift in Sources */,
+				4C1D18ED214EEADF00EA018B /* UserScreen.swift in Sources */,
+				4C1D18EB214EE8C000EA018B /* AlzayedMath.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -301,7 +358,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kuwait-it.AlzayedPrayerTimes";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -319,7 +376,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.kuwait-it.AlzayedPrayerTimes";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 4.2;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
