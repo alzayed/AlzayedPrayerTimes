@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4C1D18E9214EE74A00EA018B /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1D18E8214EE74A00EA018B /* Coordinates.swift */; };
 		4C1D18EB214EE8C000EA018B /* AlzayedMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1D18EA214EE8C000EA018B /* AlzayedMath.swift */; };
 		4C1D18ED214EEADF00EA018B /* UserScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1D18EC214EEADF00EA018B /* UserScreen.swift */; };
 		4C63491221405A4B00724D5B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C63491121405A4B00724D5B /* AppDelegate.swift */; };
@@ -19,10 +18,10 @@
 		4C9B8DB4215965A300FBF3AD /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9B8DB3215965A300FBF3AD /* SettingViewController.swift */; };
 		4C9BF9EB2140675300D48537 /* PrayerTimes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9BF9EA2140675300D48537 /* PrayerTimes.swift */; };
 		4CB209F721502AEB006B828D /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB209F621502AEB006B828D /* UserSettings.swift */; };
+		4CE402F3216726F30038D2E1 /* Coordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE402F2216726F30038D2E1 /* Coordinates.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		4C1D18E8214EE74A00EA018B /* Coordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinates.swift; sourceTree = "<group>"; };
 		4C1D18EA214EE8C000EA018B /* AlzayedMath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlzayedMath.swift; sourceTree = "<group>"; };
 		4C1D18EC214EEADF00EA018B /* UserScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserScreen.swift; sourceTree = "<group>"; };
 		4C63490E21405A4B00724D5B /* AlzayedPrayerTimes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AlzayedPrayerTimes.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -36,6 +35,7 @@
 		4C9B8DB3215965A300FBF3AD /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		4C9BF9EA2140675300D48537 /* PrayerTimes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimes.swift; sourceTree = "<group>"; };
 		4CB209F621502AEB006B828D /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
+		4CE402F2216726F30038D2E1 /* Coordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Coordinates.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,10 +97,10 @@
 			isa = PBXGroup;
 			children = (
 				4C9BF9EA2140675300D48537 /* PrayerTimes.swift */,
-				4C1D18E8214EE74A00EA018B /* Coordinates.swift */,
 				4C1D18EA214EE8C000EA018B /* AlzayedMath.swift */,
 				4C1D18EC214EEADF00EA018B /* UserScreen.swift */,
 				4CB209F621502AEB006B828D /* UserSettings.swift */,
+				4CE402F2216726F30038D2E1 /* Coordinates.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -202,8 +202,8 @@
 				4C63491221405A4B00724D5B /* AppDelegate.swift in Sources */,
 				4C81F0BE215ABFED00BC6900 /* Protocols.swift in Sources */,
 				4C9B8DB4215965A300FBF3AD /* SettingViewController.swift in Sources */,
-				4C1D18E9214EE74A00EA018B /* Coordinates.swift in Sources */,
 				4CB209F721502AEB006B828D /* UserSettings.swift in Sources */,
+				4CE402F3216726F30038D2E1 /* Coordinates.swift in Sources */,
 				4C1D18ED214EEADF00EA018B /* UserScreen.swift in Sources */,
 				4C1D18EB214EE8C000EA018B /* AlzayedMath.swift in Sources */,
 			);
